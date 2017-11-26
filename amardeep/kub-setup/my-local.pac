@@ -1,0 +1,1 @@
+function FindProxyForURL(url, host) {    // If the hostname matches, send direct.    if (isInNet(dnsResolve(host), "10.0.0.0", "255.0.0.0"))        return "PROXY 130.239.48.229:31555";     return "DIRECT";}
