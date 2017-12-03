@@ -63,7 +63,7 @@ class metricPusher:
                
     def get_attributes(self):
         resp = requests.get('http://' + self.curi + '/node/' + self.node_id )
-        if resp.status_code != 200:
+        if resp.status_code != 204:
             print('ERROR: ' + 'GET /node/<node_id> {}'.format(resp.status_code))
         else:
             node_info = resp.json()
@@ -134,6 +134,18 @@ class metricPusher:
             print 'Got health-value: '
             print data
 
+    def get_health(self):
+        
+        resp = requests.get('http://' + self.curi + '/node/resource/getHealth')
+
+        if resp.status_code != 200:
+            print('ERROR: ' + 'GET /node/resource/health {}'.format(resp.status_code))
+
+        else:
+            data = resp.json()
+            print 'Got health-value: '
+            print data
+
 
             
 if __name__ == "__main__":
@@ -145,7 +157,10 @@ if __name__ == "__main__":
     mp.get_actor_ids()
     # mp.get_capabilities()
     mp.set_health(health)
+
+    mp.get_health()
+
     # mp.add_value()
     # mp.add_attribute()
-    mp.get_attributes()
-    mp.get_value()
+    # mp.get_attributes()
+    # mp.get_value()
