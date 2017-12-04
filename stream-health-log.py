@@ -187,17 +187,16 @@ class metricPusher:
 if __name__ == "__main__":
 
     curi = sys.argv[1]
-    health = sys.argv[2]
     mp = metricPusher(curi)
+
     # mp.get_application_ids()
     # mp.get_actor_ids()
     # mp.get_capabilities()
+    # mp.set_health(health)
+    # mp.get_health()
 
-    mp.set_health(health)
-    mp.get_health()
-
-    # mp.register_for_logging()
-    # mp.get_log()
+    mp.register_for_logging()
+    mp.get_log()
 
     # mp.add_value()
     # mp.add_attribute()
