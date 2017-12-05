@@ -79,11 +79,11 @@ class metricPusher:
         resp = requests.post('http://' + self.curi + '/node/resource/healthMetric',
                              json=data)
 
-        if resp.status_code != 200:
+        if resp.status_code != 204:
             print('ERROR: ' + 'POST /node/resource/healthMetric {}'.format(resp.status_code))
 
         else:
-            print('Updated health. ID: ' + resp.json()["id"])
+            print('Updated node health with: ' + str(value))
 
 
     def add_attribute(self):        
@@ -145,8 +145,7 @@ class metricPusher:
 
         else:
             data = resp.json()
-            print('Got health-value: ')
-            print(data)
+            print('Got health-value: ' + str(data))
 
     def register_for_logging(self):
 
