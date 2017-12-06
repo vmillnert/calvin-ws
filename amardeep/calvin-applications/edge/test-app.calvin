@@ -1,0 +1,7 @@
+sensor      : edge.Sensor(sleep=0.01)
+controller  : edge.Controller(duration=0.1)
+actuator    : edge.Actuator(store_tokens=1, quiet=1)
+
+sensor.integer   > controller.token
+controller.token > actuator.token
+

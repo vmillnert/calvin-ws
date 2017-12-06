@@ -1,0 +1,5 @@
+The 'edge' folder contains actors and a test application using them.
+Copy the folder to the 'calvin-base/calvin/actorstore/systemactors' directory.
+do 'git add' and 'git commit' to include these actors before you do ansible calvin installation setup.
+Now you are ready to use these actors and define applications using these actors.
+ 
