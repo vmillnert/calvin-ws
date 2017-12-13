@@ -18,7 +18,7 @@ while true; do
   while read LINE; do
     while read DEST; do
       echo UPDATE $(date) ${DEST}
-      echo $LINE | curl -d @- -H "Content-Type: application/json" ${DEST}/actor/putmatch;
+      echo $LINE | curl --connect-timeout 1 -d @- -H "Content-Type: application/json" ${DEST}/actor/putmatch;
     done < $2;
     sleep 1;
   done < $1;
