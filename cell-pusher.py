@@ -1,10 +1,8 @@
 import requests
 import sys
-import json
-import pprint
-import sseclient
 
-class metricPusher:
+
+class CellPusher:
 
     def __init__(self, curi):
         self.curi = curi
@@ -12,7 +10,7 @@ class metricPusher:
         self.node_id = ""
 
         self.get_node_id()
-        
+
         self.applications = []
         self.actors = []
         self.capabilities = []
@@ -28,7 +26,6 @@ class metricPusher:
             resp_json = resp.json()
             self.node_id = resp_json['id']
             print('Node id: ' + self.node_id)
-
 
     def get_application_ids(self):
         resp = requests.get('http://' + self.curi + '/applications')
@@ -49,10 +46,10 @@ class metricPusher:
         else:
             self.actors = resp.json()
             print("Actor ids: ")
-            
+
             for actor in self.actors:
                 print(actor)
- 
+
     def get_capabilities(self):
         resp = requests.get('http://' + self.curi + '/capabilities')
         if resp.status_code != 200:
@@ -65,31 +62,29 @@ class metricPusher:
             # print "Capabilities: "
             # for capability in self.capabilities:
             #     print capability
-               
+
     def get_attributes(self):
-        resp = requests.get('http://' + self.curi + '/node/' + self.node_id )
+        resp = requests.get('http://' + self.curi + '/node/' + self.node_id)
         if resp.status_code != 204:
             print('ERROR: ' + 'GET /node/<node_id> {}'.format(resp.status_code))
         else:
             node_info = resp.json()
             print("attributes: " + str(node_info['attributes']))
 
-                
     def set_health(self, value):
-        
+
         data = {"value": value}
 
-        resp = requests.post('http://' + self.curi + '/node/resource/healthMetric',
+        resp = requests.post('http://' + self.curi + '/node/attribute/healthMetric',
                              json=data)
 
-        if resp.status_code != 200:
-            print('ERROR: ' + 'POST /node/resource/healthMetric {}'.format(resp.status_code))
+        if resp.status_code != 204:
+            print('ERROR: ' + 'POST /node/attribute/healthMetric {}'.format(resp.status_code))
 
         else:
-            print('Updated health. ID: ' + resp.json()["id"])
+            print('Updated node health with: ' + str(value))
 
-
-    def add_attribute(self):        
+    def add_attribute(self):
         # data = {"index": ["user_extra", {"healthy": "yes"}]}
         # data = {"node_name": {"name": "wasp"}}
         data = {"health": "good"}
@@ -97,7 +92,7 @@ class metricPusher:
         #         {"owner": {}},
         #         {"address": {}},
         #         {"user_extra": {"healthy": "yes"}}]
-        
+
         resp = requests.post('http://' + self.curi + '/node/' + self.node_id + '/attributes/indexed_public',
                              json=data)
 
@@ -108,12 +103,12 @@ class metricPusher:
             print('Added attribute!')
 
     def add_value(self):
-        
+
         # data = {"index": ["user_extra", {"healthy": "yes"}]}
         # data = {"node_name": {"name": "wasp"}}
 
         data = {"value": "yes"}
-        
+
         resp = requests.post('http://' + self.curi + '/index/healthy',
                              json=data)
 
@@ -124,11 +119,10 @@ class metricPusher:
             print('Added health-value!')
 
     def get_value(self):
-        
+
         # data = {"index": ["user_extra", {"healthy": "yes"}]}
         # data = {"node_name": {"name": "wasp"}}
 
-        
         resp = requests.get('http://' + self.curi + '/storage/health')
 
         if resp.status_code != 200:
@@ -140,87 +134,72 @@ class metricPusher:
             print(data)
 
     def get_health(self):
-        
-        resp = requests.get('http://' + self.curi + '/node/resource/getHealth')
+
+        resp = requests.get('http://' + self.curi + '/node/attribute/getHealth')
 
         if resp.status_code != 200:
-            print('ERROR: ' + 'GET /node/resource/health {}'.format(resp.status_code))
+            print('ERROR: ' + 'GET /node/attribute/getHealth/ {}'.format(resp.status_code))
 
         else:
             data = resp.json()
-            print('Got health-value: ')
-            print(data)
+            print('Is healthy: ' + str(data["healthy"]))
 
     def register_for_logging(self):
 
         data = {
             'events': ['health_new']
         }
-        
+
         resp = requests.post('http://' + self.curi + '/log',
                              json=data)
-        
-        
+
         if resp.status_code != 200:
-            print('ERROR: ' + 'GET /node/resource/health {}'.format(resp.status_code))
+            print('ERROR: ' + 'GET /node/attribute/health {}'.format(resp.status_code))
 
         else:
             data = resp.json()
             print('Registred for log: ')
             print(data)
-            
+
             print('User id: ' + str(data['user_id']))
             self.log_user_id = data['user_id']
 
-    def with_requests(url):
-        """Get a streaming response for the given event feed using requests."""
-
-        return
-
     def get_log(self):
-
 
         print("About to request the stream")
 
-        """messages = SSEClient('http://' + self.curi + '/log/' + self.log_user_id)
-        #for msg in messages:
-        #   print str(msg)
-        for msg in messages:
-            print str(msg)"""
-
-        url = 'http://' + self.curi + '/log/' + self.log_user_id
-        response = requests.get(url, stream=True)
-        client = sseclient.SSEClient(response)
-        for event in client.events():
-            data = json.loads(event.data)
-            print "event type is " + data['type']
-            print "event value is " + data['value']
-            #pprint.pprint(json.loads(event.data))
-
-        #r = requests.get('http://' + self.curi + '/log/' + self.log_user_id, stream=True)
-        #for line in r.iter_lines():
-        #    print line
+        with requests.get('http://' + self.curi + '/log/' + self.log_user_id, stream=True) as r:
+            for line in r.iter_lines():
+                print(line)
         # resp = requests.get('http://' + self.curi + '/log/' + self.log_user_id, stream=True)
         # print "Streaming log..."
 
         # for line in iter(resp.content.readline, ''):
         #     print line
-        
+
+    def set_imei_cells(self, value):
+
+        data = {"value": value}
+
+        resp = requests.post('http://' + self.curi + '/node/attribute/imeicells',
+                             json=data)
+
+        if resp.status_code != 204:
+            print('ERROR: ' + 'POST /node/attribute/imeicells {}'.format(resp.status_code))
+
+        else:
+            print('Updated node imei cell ids with: ' + str(value))
+
+
 if __name__ == "__main__":
+    # syntax: python cell-pusher.py <curi> <imei> <cell>
 
     curi = sys.argv[1]
-    mp = metricPusher(curi)
+    imei = sys.argv[2]
+    cell = sys.argv[3]
+    cp = CellPusher(curi)
 
-    # mp.get_application_ids()
-    # mp.get_actor_ids()
-    # mp.get_capabilities()
-    # mp.set_health(health)
-    # mp.get_health()
+    imei_cells = [{"imei": imei, "cell": cell}]
 
-    mp.register_for_logging()
-    mp.get_log()
+    cp.set_imei_cells(imei_cells)
 
-    # mp.add_value()
-    # mp.add_attribute()
-    # mp.get_attributes()
-    # mp.get_value()

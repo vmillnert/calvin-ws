@@ -1,7 +1,8 @@
 import requests
 import sys
 
-class metricPusher:
+
+class HealthPusher:
 
     def __init__(self, curi):
         self.curi = curi
@@ -76,11 +77,11 @@ class metricPusher:
         
         data = {"value": value}
 
-        resp = requests.post('http://' + self.curi + '/node/resource/healthMetric',
+        resp = requests.post('http://' + self.curi + '/node/attribute/healthMetric',
                              json=data)
 
         if resp.status_code != 204:
-            print('ERROR: ' + 'POST /node/resource/healthMetric {}'.format(resp.status_code))
+            print('ERROR: ' + 'POST /node/attribute/healthMetric {}'.format(resp.status_code))
 
         else:
             print('Updated node health with: ' + str(value))
@@ -138,14 +139,14 @@ class metricPusher:
 
     def get_health(self):
         
-        resp = requests.get('http://' + self.curi + '/node/resource/getHealth')
+        resp = requests.get('http://' + self.curi + '/node/attribute/getHealth')
 
         if resp.status_code != 200:
-            print('ERROR: ' + 'GET /node/resource/health {}'.format(resp.status_code))
+            print('ERROR: ' + 'GET /node/attribute/getHealth/ {}'.format(resp.status_code))
 
         else:
             data = resp.json()
-            print('Got health-value: ' + str(data))
+            print('Is healthy: ' + str(data["healthy"]))
 
     def register_for_logging(self):
 
@@ -158,7 +159,7 @@ class metricPusher:
         
         
         if resp.status_code != 200:
-            print('ERROR: ' + 'GET /node/resource/health {}'.format(resp.status_code))
+            print('ERROR: ' + 'GET /node/attribute/health {}'.format(resp.status_code))
 
         else:
             data = resp.json()
@@ -182,18 +183,32 @@ class metricPusher:
 
         # for line in iter(resp.content.readline, ''):
         #     print line
+
+    def set_imei_cells(self, value):
+
+        data = {"value": value}
+
+        resp = requests.post('http://' + self.curi + '/node/attribute/imeicells',
+                             json=data)
+
+        if resp.status_code != 204:
+            print('ERROR: ' + 'POST /node/attribute/imeicells {}'.format(resp.status_code))
+
+        else:
+            print('Updated node imei cell ids with: ' + str(value))
         
 if __name__ == "__main__":
+    # syntax: python health-pusher.py <curi> <health (between 0 and 1)>
 
     curi = sys.argv[1]
     health = sys.argv[2]
-    mp = metricPusher(curi)
+    hp = HealthPusher(curi)
     # mp.get_application_ids()
     # mp.get_actor_ids()
     # mp.get_capabilities()
 
-    mp.set_health(health)
-    mp.get_health()
+    hp.set_health(health)
+    #mp.get_health()
 
     # mp.register_for_logging()
     # mp.get_log()
