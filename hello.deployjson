@@ -1,0 +1,5 @@
+{
+"requirements": {
+  "snk":[{"op":"node_attr_match","kwargs":{"index":["node_name",{"name":"edge"}]},"type":"+"}]
+  }
+}
