@@ -175,9 +175,9 @@ class metricPusher:
 
         print("About to request the stream")
 
-        with requests.get('http://' + self.curi + '/log/' + self.log_user_id, stream=True) as r:
-            for line in r.iter_lines():
-                print(line)
+        r =  requests.get('http://' + self.curi + '/log/' + self.log_user_id, stream=False)
+        for line in r.iter_lines():
+            print(line)
         # resp = requests.get('http://' + self.curi + '/log/' + self.log_user_id, stream=True)
         # print "Streaming log..."
 
