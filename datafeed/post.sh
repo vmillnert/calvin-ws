@@ -16,10 +16,24 @@ fi;
 
 while true; do
   while read LINE; do
-    while read DEST; do
-      echo UPDATE $(date) ${DEST}
-      echo $LINE | curl --connect-timeout 1 -d @- -H "Content-Type: application/json" ${DEST}/actor/putmatch;
-    done < $2;
-    sleep 1;
+	  IFS=$';';
+		arr=(${LINE});
+		if [ ${arr[0]} == "B" ];
+		then
+			data=${arr[1]};
+			h=${arr[2]};
+			while read DEST; do
+				echo $(date +%H:%m:%S) UPDATE CELL ${DEST}: ${data} | tee -a ~/datafeed.log;
+				echo $data | curl --connect-timeout 1 -d @- -H "Content-Type: application/json" ${DEST}/node/attribute/imeicells;
+			done < $2;
+		else
+			index=${arr[1]};
+			data=${arr[2]};
+			h=${arr[3]};
+			to=$(tail -n +${index} ${2} | head -n 1);
+			echo $(date +%H:%m:%S) UPDATE HEALTH ${to}: ${data} | tee -a ~/datafeed.log;
+			echo $data | curl --connect-timeout 1 -d @- -H "Content-Type: application/json" ${to}/node/attribute/healthMetric;
+		fi;
+    sleep $h;
   done < $1;
 done;

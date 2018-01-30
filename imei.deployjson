@@ -1,3 +1,7 @@
 {
-"imei": {"snk": "abcd1234", "src": "efgh5678"}
+"imei": {"snk": "123456789123456", "src": "123456789123457"}
+{"op": "node_attr_match", 
+     "kwargs": {"index": ["node_name", {"name": "per-dc-13000"}]}
+     "type": "+"
+    }
 }
