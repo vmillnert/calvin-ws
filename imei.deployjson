@@ -1,3 +1,6 @@
 {
-"imei": {"snk": "abcd1234", "src": "efgh5678"}
+"imei": {"auto_pilot": "abcd1234"},
+"requirements": {
+  "learning":[{"op":"node_attr_match","kwargs":{"index":["node_name",{"name":"dc"}]},"type":"+"}]
+  }
 }

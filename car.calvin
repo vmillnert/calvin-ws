@@ -1,0 +1,5 @@
+/* Actors */
+learning : std.Trigger(tick=1.0, data="Hello, world")
+auto_pilot : io.Log(loglevel="INFO")
+/* Connections */
+learning.data > auto_pilot.data
